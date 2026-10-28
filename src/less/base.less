@@ -1,0 +1,259 @@
+/* ========================================
+   1. 编译时变量
+   ======================================== */
+
+   @primary-color: #2563eb;
+   @text-color: #1f2937;
+   @text-secondary-color: #6b7280;
+   
+   @page-background: #f5f7fa;
+   @surface-background: #ffffff;
+   @border-color: #e5e7eb;
+   
+   @sidebar-background: #111827;
+   @sidebar-text-color: #e5e7eb;
+   
+   @font-size-base: 14px;
+   @radius-base: 6px;
+   @space-base: 16px;
+   
+   @sidebar-width: 220px;
+   @header-height: 56px;
+   
+   
+   /* ========================================
+      2. 输出 CSS 变量
+      页面和组件可以直接通过 var() 使用
+      ======================================== */
+   
+   :root {
+     --app-primary: @primary-color;
+     --app-text: @text-color;
+     --app-text-secondary: @text-secondary-color;
+   
+     --app-bg: @page-background;
+     --app-surface: @surface-background;
+     --app-border: @border-color;
+   
+     --app-sidebar-bg: @sidebar-background;
+     --app-sidebar-text: @sidebar-text-color;
+   
+     --app-radius: @radius-base;
+     --app-space: @space-base;
+   
+     --app-sidebar-width: @sidebar-width;
+     --app-header-height: @header-height;
+   }
+   
+   
+   /* ========================================
+      3. 盒模型和根节点
+      ======================================== */
+   
+   *,
+   *::before,
+   *::after {
+     box-sizing: border-box;
+   }
+   
+   /* 为后台全高布局建立明确的高度链 */
+   html,
+   body,
+   #app {
+     height: 100%;
+   }
+   
+   body {
+     margin: 0;
+   
+     font-family:
+       -apple-system,
+       BlinkMacSystemFont,
+       "Segoe UI",
+       Roboto,
+       "Helvetica Neue",
+       Arial,
+       "PingFang SC",
+       "Microsoft YaHei",
+       sans-serif;
+   
+     font-size: @font-size-base;
+     line-height: 1.5;
+   
+     color: var(--app-text);
+     background-color: var(--app-bg);
+   }
+   
+   
+   /* ========================================
+      4. 基础元素
+      富文本、文章内容单独设置排版
+      ======================================== */
+   
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6,
+   p,
+   figure,
+   blockquote,
+   dl,
+   dd {
+     margin: 0;
+   }
+   
+   /* 表单控件统一继承字体，外观交给组件 */
+   button,
+   input,
+   select,
+   textarea {
+     font: inherit;
+   }
+   
+   button {
+     &:not(:disabled) {
+       cursor: pointer;
+     }
+   
+     &:disabled {
+       cursor: not-allowed;
+     }
+   }
+   
+   /* 固定尺寸头像、图标可在组件内覆盖 */
+   img,
+   video {
+     max-width: 100%;
+     height: auto;
+     vertical-align: middle;
+   }
+   
+   a {
+     color: var(--app-primary);
+   }
+   
+   /* 保留焦点反馈 */
+   :focus-visible {
+     outline: 2px solid var(--app-primary);
+     outline-offset: 2px;
+   }
+   
+   
+   /* ========================================
+      5. 常用工具类
+      ======================================== */
+   
+   /* 单行省略，需要有可约束的宽度 */
+   .u-ellipsis {
+     overflow: hidden;
+     white-space: nowrap;
+     text-overflow: ellipsis;
+   }
+   
+   /* 水平、垂直居中 */
+   .u-flex-center {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
+   
+   /* 次要文字 */
+   .u-text-secondary {
+     color: var(--app-text-secondary);
+   }
+   
+   /* 仅对明确需要的列表清除默认样式 */
+   .u-list-reset {
+     margin: 0;
+     padding: 0;
+     list-style: none;
+   }
+   
+   
+   /* ========================================
+      6. 后台布局
+      显式使用对应类名时生效
+      ======================================== */
+   
+   .admin-layout {
+     display: flex;
+     height: 100%;
+   
+     min-width: 0;
+     min-height: 0;
+     overflow: hidden;
+   
+     /* 左侧菜单区 */
+     &__sidebar {
+       flex: 0 0 var(--app-sidebar-width);
+       width: var(--app-sidebar-width);
+   
+       min-width: 0;
+       min-height: 0;
+       overflow: auto;
+   
+       color: var(--app-sidebar-text);
+       background-color: var(--app-sidebar-bg);
+     }
+   
+     /* 右侧区域：顶部栏 + 内容区 */
+     &__main {
+       display: flex;
+       flex: 1;
+       flex-direction: column;
+   
+       min-width: 0;
+       min-height: 0;
+       overflow: hidden;
+     }
+   
+     /* 顶部栏 */
+     &__header {
+       display: flex;
+       flex: 0 0 var(--app-header-height);
+       align-items: center;
+       justify-content: space-between;
+   
+       gap: 12px;
+       min-width: 0;
+       padding: 0 var(--app-space);
+   
+       border-bottom: 1px solid var(--app-border);
+       background-color: var(--app-surface);
+     }
+   
+     /* 页面内容滚动区 */
+     &__content {
+       flex: 1;
+   
+       min-width: 0;
+       min-height: 0;
+       overflow: auto;
+   
+       padding: var(--app-space);
+     }
+   }
+   
+   
+   /* ========================================
+      7. 页面容器和基础卡片
+      ======================================== */
+   
+   .admin-page {
+     min-width: 0;
+   }
+   
+   .admin-card {
+     min-width: 0;
+     padding: var(--app-space);
+   
+     border: 1px solid var(--app-border);
+     border-radius: var(--app-radius);
+     background-color: var(--app-surface);
+   
+     & + & {
+       margin-top: var(--app-space);
+     }
+   }
