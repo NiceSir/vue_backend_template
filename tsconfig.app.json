@@ -8,6 +8,7 @@
 
     // Path mapping for cleaner imports.
     "paths": {
+      "@/config": ["./config/index.ts"],
       "@/*": ["./src/*"]
     },
 
