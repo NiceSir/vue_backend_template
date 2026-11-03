@@ -4,7 +4,7 @@ import { json } from 'node:stream/consumers'
 import Mock from 'mockjs'
 import type { Plugin } from 'vite'
 
-import { createMockUsers } from '../../mock/users.ts'
+import { createMockUserInfo, createMockUsers } from '../../mock/users.ts'
 import type { MockUser } from '../../mock/users.ts'
 
 const MOCK_PASSWORD = 'Mock@123456'
@@ -34,6 +34,9 @@ export const createUserMockPlugin = (): Plugin => ({
   configureServer(server) {
     // 每个开发服务独立持有数据，避免每次请求重新随机生成用户。
     const users = createMockUsers()
+    const userInfos = new Map(
+      users.map((user, index) => [user.id, createMockUserInfo(user, index + 1)]),
+    )
     const sessions = new Map<string, MockUser>()
 
     const handleRequest = async (request: IncomingMessage, response: ServerResponse) => {
@@ -84,7 +87,7 @@ export const createUserMockPlugin = (): Plugin => ({
 
         const token = `mock-${Mock.Random.guid()}`
         sessions.set(token, user)
-        sendJSON(response, 200, { code: 0, message: '登录成功', data: { token, user } })
+        sendJSON(response, 200, { code: 0, message: '登录成功', data: { token } })
         return
       }
 
@@ -97,7 +100,11 @@ export const createUserMockPlugin = (): Plugin => ({
         return
       }
 
-      sendJSON(response, 200, { code: 0, message: '获取当前用户成功', data: user })
+      sendJSON(response, 200, {
+        code: 0,
+        message: '获取当前用户成功',
+        data: userInfos.get(user.id),
+      })
     }
 
     server.middlewares.use('/api/mock', (request, response) => {

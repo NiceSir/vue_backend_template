@@ -1,4 +1,7 @@
 import { request } from '@/axios';
+import type { UserInfo } from './types';
+
+export type { UserInfo } from './types';
 
 /** 用户登录接口的账号和密码参数。 */
 export interface LoginParams {
@@ -6,23 +9,22 @@ export interface LoginParams {
     password: string;
 }
 
-/** 登录接口返回的用户资料，不包含密码。 */
-export interface UserInfo {
-    id: string;
-    username: string;
-    nickname: string;
-    email: string;
-    role: 'admin' | 'user';
-}
-
 interface LoginResponse {
     code: number;
     message: string;
     data: {
         token: string;
-        user: UserInfo;
     };
 }
 
-/** 使用账号和密码登录，返回包含接口数据的完整 Axios 响应。 */
+interface UserInfoResponse {
+    code: number;
+    message: string;
+    data: UserInfo;
+}
+
+/** 使用账号和密码获取 token，返回完整的 Axios 响应。 */
 export const loginUser = (params: LoginParams) => request.post<LoginResponse>('/login', params);
+
+/** 获取当前登录用户资料，鉴权头由请求拦截器注入，返回完整的 Axios 响应。 */
+export const getUserInfo = () => request.get<UserInfoResponse>('/me');

@@ -5,6 +5,7 @@ import { createServer } from 'vite'
 
 import { createUserMockPlugin } from './vitePlugin.ts'
 import type { MockUser } from '../../mock/users.ts'
+import type { UserInfo } from '../../src/axios/modules/user/types.ts'
 
 test('固定用户使用指定密码，随机用户保留原密码，响应不包含密码', async () => {
   const server = await createServer({
@@ -30,6 +31,10 @@ test('固定用户使用指定密码，随机用户保留原密码，响应不�
     assert.equal(usersResult.data.list.every((user) => !('password' in user)), true)
     const randomUser = usersResult.data.list.find((user) => user.username !== '18888888888')
     assert.ok(randomUser)
+    assert.equal((await fetch(`${baseURL}/me`)).status, 401)
+    assert.equal((await fetch(`${baseURL}/me`, {
+      headers: { Authorization: 'Bearer invalid-token' },
+    })).status, 401)
 
     for (const [username, password, expectedStatus] of [
       ['18888888888', '12345678', 200],
@@ -45,19 +50,35 @@ test('固定用户使用指定密码，随机用户保留原密码，响应不�
       })
       assert.equal(response.status, expectedStatus, `账号 ${username} 的登录结果`)
       const result = (await response.json()) as {
-        data: { token: string; user: MockUser } | null
+        data: { token: string } | null
       }
       if (expectedStatus === 200) {
         assert.ok(result.data)
-        assert.equal(result.data.user.username, username)
-        assert.equal('password' in result.data.user, false)
+        assert.deepEqual(Object.keys(result.data), ['token'])
         const currentResponse = await fetch(`${baseURL}/me`, {
           headers: { Authorization: `Bearer ${result.data.token}` },
         })
         assert.equal(currentResponse.status, 200)
-        const current = (await currentResponse.json()) as { data: MockUser }
-        assert.equal(current.data.username, username)
+        const current = (await currentResponse.json()) as { data: UserInfo }
+        const account = usersResult.data.list.find((user) => user.username === username)
+        assert.ok(account)
+        assert.equal(current.data.name, account.nickname)
+        assert.equal(current.data.email, account.email)
+        assert.equal(current.data.is_super, account.role === 'admin' ? 1 : 0)
+        assert.equal(typeof current.data.admin_id, 'number')
+        assert.equal(current.data.deleted_at, null)
+        assert.deepEqual(Object.keys(current.data).sort(), [
+          'admin_id', 'authority_area', 'avatar', 'created_at', 'deleted_at', 'department',
+          'email', 'is_super', 'menu', 'name', 'op_per_user', 'op_user', 'phone', 'updated_at',
+        ].sort())
         assert.equal('password' in current.data, false)
+        assert.deepEqual(current.data.menu, [
+          { path: '/home', path_id: 1, pid: 0, title: '首页', children: null },
+        ])
+        const repeated = await fetch(`${baseURL}/me`, {
+          headers: { Authorization: `Bearer ${result.data.token}` },
+        })
+        assert.deepEqual((await repeated.json()).data, current.data)
       }
     }
   } finally {

@@ -1,6 +1,8 @@
 import Mock from 'mockjs'
 
-/** Mock 接口返回的用户资料，不包含登录密码。 */
+import type { UserInfo } from '../src/axios/modules/user/types.ts'
+
+/** Mock 用户列表中的账号数据，不包含登录密码。 */
 export interface MockUser {
   id: string
   username: string
@@ -30,4 +32,38 @@ export const createMockUsers = (): MockUser[] => {
   })
 
   return users
+}
+
+/**
+ * 生成管理账号资料及菜单，不包含登录凭据。
+ * @param user 对应的 Mock 登录账号。
+ * @param adminId 管理账号的唯一数字标识。
+ */
+export const createMockUserInfo = (user: MockUser, adminId: number): UserInfo => {
+  const createdAt = Mock.Random.datetime('yyyy-MM-dd HH:mm:ss')
+
+  return {
+    admin_id: adminId,
+    authority_area: '',
+    avatar: Mock.Random.image('100x100', '#9c7deb', '#fff', 'User'),
+    created_at: createdAt,
+    deleted_at: null,
+    department: '技术',
+    email: user.email,
+    is_super: user.role === 'admin' ? 1 : 0,
+    name: user.nickname,
+    op_per_user: user.email,
+    op_user: user.email,
+    phone: '',
+    updated_at: createdAt,
+    menu: [
+      {
+        path: '/home',
+        path_id: 1,
+        pid: 0,
+        title: '首页',
+        children: null,
+      },
+    ],
+  }
 }

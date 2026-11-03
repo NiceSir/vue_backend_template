@@ -25,6 +25,7 @@
                         placeholder="请输入密码"
                         :prefix-icon="Lock"
                         type="password"
+                        @keyup.enter="handleSubmit"
                     />
                 </el-form-item>
                 <el-form-item>
@@ -52,10 +53,10 @@ import { User, Lock } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 
-import { useUserManager } from '@/managers/user';
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter();
-const userManager = useUserManager();
+const userStore = useUserStore();
 const loginFormRef = useTemplateRef<FormInstance>('loginFormRef');
 const isSubmitting = ref(false);
 const loginForm = reactive({
@@ -81,7 +82,6 @@ const loginRules: FormRules = {
     ],
 };
 
-
 const handleSubmit = async () => {
     if (!loginFormRef.value || isSubmitting.value) return;
 
@@ -89,10 +89,9 @@ const handleSubmit = async () => {
     try {
         await loginFormRef.value.validate(async (isValid) => {
             if (!isValid) return;
-
-            await userManager.login(loginForm);
-            await router.replace({ name: 'home' });
-            ElMessage.success('登录成功');
+            await userStore.login(loginForm);
+            const res = await router.replace({ name: 'home' });
+            console.log('router replace', res);
         });
     } catch (error: unknown) {
         if (isAxiosError<{ message: string }>(error)) {
