@@ -34,15 +34,31 @@ const routers: RouteRecordRaw[] = [
     },
     // 系统级菜单
     {
+        path: '/401',
+        name: 'error_401',
+        component: () => import('@/views/error-page/401.vue'),
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
         path: '/404',
         name: 'error_404',
-        component: ()=> import('@/views/error-page/404.vue')
+        component: () => import('@/views/error-page/404.vue'),
+        meta: {
+            requiresAuth: false,
+        },
     },
     {
         path: '/500',
         name: 'error_500',
-        component: ()=> import('@/views/error-page/500.vue')
-    }
+        component: () => import('@/views/error-page/500.vue'),
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    // 将匹配所有内容并将其放在 `route.params.pathMatch` 下
+    { path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/404' },
 ];
 
 routers.push(userManager);

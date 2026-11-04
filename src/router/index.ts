@@ -25,6 +25,11 @@ const router = createRouter({
 // 通过控制用户登录管理路由的跳转
 router.beforeEach(async (to, from, next) => {
     updatePageTitle(to.meta.title);
+
+    // 错误页
+    if (to.meta.requiresAuth === false) {
+        return next();
+    }
     const userStore = useUserStore();
     const token = userStore.getToken();
     if (!token) {

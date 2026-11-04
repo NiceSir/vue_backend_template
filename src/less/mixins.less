@@ -43,3 +43,13 @@
     user-select: none;
     pointer-events: none;
 }
+
+/*
+设置绝对定位，默认居中
+*/
+.u-absolute(@top: 50%, @left: 50%) {
+    position: absolute;
+    top: @top;
+    left: @left;
+    transform: translate(-50%, -50%);
+}
