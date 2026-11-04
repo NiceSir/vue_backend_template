@@ -91,6 +91,7 @@ const handleSubmit = async () => {
             if (!isValid) return;
             await userStore.login(loginForm);
             const res = await router.replace({ name: 'home' });
+            ElMessage.success('登录成功');
             console.log('router replace', res);
         });
     } catch (error: unknown) {

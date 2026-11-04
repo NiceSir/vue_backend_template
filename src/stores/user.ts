@@ -1,7 +1,6 @@
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { ElMessage } from 'element-plus'
 
 import { getUserInfo, loginUser } from '@/axios/modules/user';
 import type { LoginParams, UserInfo } from '@/axios/modules/user';
@@ -45,7 +44,6 @@ export const useUserStore = defineStore('user', () => {
         try {
             const response = await getUserInfo();
             userInfo.value = response.data.data;
-            ElMessage.success('登录成功');
             return response;
         } catch(error) {
             resetUserinfo();
